@@ -42,12 +42,27 @@ app.listen(port, function() {
 
 bot.start(function (ctx) {
     console.log('started: ' + ctx.from.id);
-    return ctx.reply('Willkommen beim Speiseplan für UKS WA73 \n Hier gibt es nichts mehr :(');
+    return ctx.reply('Willkommen beim Speiseplan für UKS WA73 \n /plan für den heutigen Speiseplan');
 });
 
-// bot.command('help', function (ctx) { return ctx.reply('You shall not pass!'); });
+bot.command('plan', function (ctx) { 
+
+
+  const meals = await fetchMealPlan(inlineQuery.query)
+  var res = "";
+
+  meals.forEach((meal) => {
+    res += "Essen 1\n";
+    res += meal.name + "\n";
+    res += "Preis: " + meal.price + "\n";
+    res += "(" + meal.additions + ")\n\n";
+  });
+  
+  return ctx.reply(res); 
+
+});
 // bot.command('hunger', function (ctx) { return ctx.reply('Bald wird es hier den Speiseplan geben'); });
-async function spotifySearch (query) {
+async function fetchMealPlan (query) {
   // if (query === "") return {};
   const apiUrl = 'http://localhost:' + port;
   const response = await fetch(apiUrl)
@@ -57,7 +72,7 @@ async function spotifySearch (query) {
 
 bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
   const offset = parseInt(inlineQuery.offset) || 0
-  const meals = await spotifySearch(inlineQuery.query)
+  const meals = await fetchMealPlan(inlineQuery.query)
   const results = meals.map((meal) => ({
     type: 'article',
     id: meal.id,
