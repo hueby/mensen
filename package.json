@@ -1,0 +1,16 @@
+{
+  "name": "mens_bot",
+  "version": "0.0.1",
+  "description": "Mensa Bot Telegram Uni Kassel WA71",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dennis Hübner <dennis.huebner89@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^9.4.6",
+    "telegraf": "^3.18.0"
+  }
+}
