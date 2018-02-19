@@ -8,7 +8,7 @@ Parse.initialize(process.env.PARSE_APP_ID);
 Parse.serverURL = process.env.PARSE_SERVER_URL;
 var server = require('http').createServer(app);
 const PORT = process.env.PORT || 3000;
-const EPORT = ( process.env.PORT  + 1) || 3001;
+const EPORT = parseInt(PORT) + 1
 const URL = process.env.URL || '';
 const BOT_TOKEN = process.env.BOT_TOKEN || ''
 
