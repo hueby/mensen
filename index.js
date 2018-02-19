@@ -83,3 +83,11 @@ bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
 })
 
 bot.startPolling();
+
+process.on('SIGTERM', function () {
+  bot.stop(() => {
+    server.close(function () {
+      process.exit(0);
+    });
+  });
+});
