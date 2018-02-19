@@ -18,7 +18,9 @@ app.get('/', function(req, res) {
       if(canteen.get("name") === "Wilhelmshöher Allee") {
         var d = new Date();
         var week = canteen.get("week");
-        var mealPlan = week[0].days[d.getDay() - 1].meals;
+        var day = d.getDay() - 1;
+        if (day > 4) day = 0;
+        var mealPlan = week[0].days[].meals;
         // console.log(JSON.stringify(mealPlan[0].prices.student));
         mealPlan = mealPlan.map((meal, index) => ({
           id: index,
