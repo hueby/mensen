@@ -23,7 +23,7 @@ app.get('/', function(req, res) {
         var mealPlan = week[0].days[day].meals;
         // console.log(JSON.stringify(mealPlan[0].prices.student));
         mealPlan = mealPlan.map((meal, index) => ({
-          id: index,
+          id: parseInt(index),
           name: meal.description,
           price: parseFloat(meal.prices.student).toFixed(2) + " €",
           desc: meal.additions.join(", ")
@@ -40,29 +40,7 @@ app.listen(port, function() {
   console.log("listening on " + port);
 });
 
-bot.start(function (ctx) {
-    console.log('started: ' + ctx.from.id);
-    return ctx.reply('Willkommen beim Speiseplan für UKS WA73 \n /plan für den heutigen Speiseplan');
-});
-
-bot.command('plan', function (ctx) { 
-
-
-  const meals = await fetchMealPlan(inlineQuery.query)
-  var res = "";
-
-  meals.forEach((meal) => {
-    res += "Essen 1\n";
-    res += meal.name + "\n";
-    res += "Preis: " + meal.price + "\n";
-    res += "(" + meal.additions + ")\n\n";
-  });
-  
-  return ctx.reply(res); 
-
-});
-// bot.command('hunger', function (ctx) { return ctx.reply('Bald wird es hier den Speiseplan geben'); });
-async function fetchMealPlan (query) {
+async function fetchMealPlan () {
   // if (query === "") return {};
   const apiUrl = 'http://localhost:' + port;
   const response = await fetch(apiUrl)
@@ -70,9 +48,30 @@ async function fetchMealPlan (query) {
   return meals
 }
 
+bot.start(function (ctx) {
+    console.log('started: ' + ctx.from.id);
+    return ctx.reply('Willkommen beim Speiseplan für UKS WA73 \n /plan für den heutigen Speiseplan');
+});
+
+bot.command('plan', async (ctx) => { 
+  const meals = await fetchMealPlan()
+  var res = "";
+
+  meals.forEach((meal) => {
+    res += "Essen " + (meal.id + 1) + "\n";
+    res += meal.name + "\n";
+    res += "Preis: " + meal.price + "\n";
+    res += "(" + meal.desc + ")\n\n";
+  });
+  
+  return ctx.reply(res); 
+
+});
+// bot.command('hunger', function (ctx) { return ctx.reply('Bald wird es hier den Speiseplan geben'); });
+
 bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
   const offset = parseInt(inlineQuery.offset) || 0
-  const meals = await fetchMealPlan(inlineQuery.query)
+  const meals = await fetchMealPlan()
   const results = meals.map((meal) => ({
     type: 'article',
     id: meal.id,
