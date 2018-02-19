@@ -7,6 +7,7 @@ var Parse = require('parse/node');
 Parse.initialize(process.env.PARSE_APP_ID);
 Parse.serverURL = process.env.PARSE_SERVER_URL;
 var app = new express();
+var server = require('http').createServer(app);
 var port = process.env.PORT || 3000;
 
 app.get('/', function(req, res) {
@@ -36,7 +37,7 @@ app.get('/', function(req, res) {
   });
 });
 
-app.listen(port, function() {
+server.listen(port, function() {
   console.log("listening on " + port);
 });
 
@@ -64,6 +65,7 @@ bot.command('plan', async (ctx) => {
     res += "(" + meal.desc + ")\n\n";
   });
   
+  console.log("Processing command request");
   return ctx.reply(res); 
 
 });
@@ -79,6 +81,7 @@ bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
     title: meal.price,
     description: meal.name + " (" + meal.desc + ")"
   }))
+  console.log("Processing inline request");
   return answerInlineQuery(results, {cache_time: 0})
 })
 
@@ -86,7 +89,9 @@ bot.startPolling();
 
 process.on('SIGTERM', function () {
   bot.stop(() => {
+    console.log("Closed bot");
     server.close(function () {
+      console.log("Closed server");
       process.exit(0);
     });
   });
