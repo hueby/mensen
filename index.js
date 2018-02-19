@@ -14,7 +14,7 @@ const BOT_TOKEN = process.env.BOT_TOKEN || ''
 
 const bot = new Telegraf(BOT_TOKEN);
 bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`)
-bot.startWebhook(`/bot${BOT_TOKEN}`, null, PORT)
+bot.startWebhook(`bot${BOT_TOKEN}`, null, PORT)
 
 async function fetchMealPlan () {
   // if (query === "") return {};
