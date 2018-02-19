@@ -48,7 +48,6 @@ bot.start(function (ctx) {
 async function spotifySearch (query) {
   // if (query === "") return {};
   const apiUrl = 'http://localhost:' + port;
-  console.log(apiUrl);
   const response = await fetch(apiUrl)
   const { meals } = await response.json()
   return meals
