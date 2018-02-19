@@ -1,45 +1,20 @@
 const Telegraf = require("telegraf");
-const bot = new Telegraf(process.env.BOT_TOKEN);
 const fetch = require('node-fetch')
 const express = require('express')
+const app = new express();
 var Parse = require('parse/node');
 
 Parse.initialize(process.env.PARSE_APP_ID);
 Parse.serverURL = process.env.PARSE_SERVER_URL;
-var app = new express();
 var server = require('http').createServer(app);
-var port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
+const EPORT = ( process.env.PORT  + 1) || 3001;
+const URL = process.env.URL || '';
+const BOT_TOKEN = process.env.BOT_TOKEN || ''
 
-app.get('/', function(req, res) {
-  var Mensa = Parse.Object.extend("Mensa");
-  var query = new Parse.Query(Mensa);
-  query.find().then((canteens) => {
-    canteens.forEach((canteen) => {
-      // console.log(JSON.stringify(canteen));
-      if(canteen.get("name") === "Wilhelmshöher Allee") {
-        var d = new Date();
-        var week = canteen.get("week");
-        var day = d.getDay() - 1;
-        if (day > 4) day = 0;
-        var mealPlan = week[0].days[day].meals;
-        // console.log(JSON.stringify(mealPlan[0].prices.student));
-        mealPlan = mealPlan.map((meal, index) => ({
-          id: parseInt(index),
-          name: meal.description,
-          price: parseFloat(meal.prices.student).toFixed(2) + " €",
-          desc: meal.additions.join(", ")
-        }))
-        res.json({meals: mealPlan});
-      }
-    });
-  }).catch((error) => {
-    console.error(error);
-  });
-});
-
-server.listen(port, function() {
-  console.log("listening on " + port);
-});
+const bot = new Telegraf(BOT_TOKEN);
+bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`)
+bot.startWebhook(`/bot${BOT_TOKEN}`, null, PORT)
 
 async function fetchMealPlan () {
   // if (query === "") return {};
@@ -85,7 +60,7 @@ bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
   return answerInlineQuery(results, {cache_time: 0})
 })
 
-bot.startPolling();
+// bot.startPolling();
 
 process.on('SIGTERM', function () {
   bot.stop(() => {
@@ -96,3 +71,35 @@ process.on('SIGTERM', function () {
     });
   });
 });
+
+app.get('/', function(req, res) {
+  var Mensa = Parse.Object.extend("Mensa");
+  var query = new Parse.Query(Mensa);
+  query.find().then((canteens) => {
+    canteens.forEach((canteen) => {
+      // console.log(JSON.stringify(canteen));
+      if(canteen.get("name") === "Wilhelmshöher Allee") {
+        var d = new Date();
+        var week = canteen.get("week");
+        var day = d.getDay() - 1;
+        if (day > 4) day = 0;
+        var mealPlan = week[0].days[day].meals;
+        // console.log(JSON.stringify(mealPlan[0].prices.student));
+        mealPlan = mealPlan.map((meal, index) => ({
+          id: parseInt(index),
+          name: meal.description,
+          price: parseFloat(meal.prices.student).toFixed(2) + " €",
+          desc: meal.additions.join(", ")
+        }))
+        res.json({meals: mealPlan});
+      }
+    });
+  }).catch((error) => {
+    console.error(error);
+  });
+});
+
+server.listen(EPORT, function() {
+  console.log("listening on " + EPORT);
+});
+
