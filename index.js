@@ -47,7 +47,8 @@ bot.start(function (ctx) {
 // bot.command('hunger', function (ctx) { return ctx.reply('Bald wird es hier den Speiseplan geben'); });
 async function spotifySearch (query) {
   // if (query === "") return {};
-  const apiUrl = `http://localhost:3000/`
+  const apiUrl = 'http://localhost:' + port;
+  console.log(apiUrl);
   const response = await fetch(apiUrl)
   const { meals } = await response.json()
   return meals
