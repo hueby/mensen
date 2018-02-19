@@ -11,6 +11,9 @@
   "license": "MIT",
   "dependencies": {
     "@types/node": "^9.4.6",
+    "express": "^4.16.2",
+    "node-fetch": "^2.0.0",
+    "parse": "^1.11.0",
     "telegraf": "^3.18.0"
   }
 }
