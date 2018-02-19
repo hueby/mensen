@@ -20,7 +20,7 @@ app.get('/', function(req, res) {
         var week = canteen.get("week");
         var day = d.getDay() - 1;
         if (day > 4) day = 0;
-        var mealPlan = week[0].days[].meals;
+        var mealPlan = week[0].days[day].meals;
         // console.log(JSON.stringify(mealPlan[0].prices.student));
         mealPlan = mealPlan.map((meal, index) => ({
           id: index,
