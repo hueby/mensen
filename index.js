@@ -3,6 +3,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 const fetch = require('node-fetch')
 const express = require('express')
 const http = require('http');
+const https = require('https');
 var Parse = require('parse/node');
 
 Parse.initialize(process.env.PARSE_APP_ID);
@@ -10,6 +11,7 @@ Parse.serverURL = process.env.PARSE_SERVER_URL;
 var app = new express();
 var server = http.createServer(app);
 var port = process.env.PORT || 3000;
+var URL = process.env.URL || 'http://localhost'
 
 function getMealPlan() {
   return new Promise((res,rej) => {
@@ -50,7 +52,7 @@ server.listen(port, function() {
 });
 
 setInterval(() => {
-  http.get(URL);
+  https.get(URL);
 }, 300000);
 
 function fetchMealPlan () {
