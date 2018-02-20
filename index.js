@@ -10,35 +10,37 @@ var app = new express();
 var server = require('http').createServer(app);
 var port = process.env.PORT || 3000;
 
-async function getMealPlan() {
-  var Mensa = Parse.Object.extend("Mensa");
-  var query = new Parse.Query(Mensa);
-  query.find().then((canteens) => {
-    console.log("drinne");
-    canteens.forEach((canteen) => {
-      // console.log(JSON.stringify(canteen));
-      if(canteen.get("name") === "Wilhelmshöher Allee") {
-        var d = new Date();
-        var week = canteen.get("week");
-        var day = d.getDay() - 1;
-        if (day > 4) day = 0;
-        var mealPlan = week[0].days[day].meals;
-        // console.log(JSON.stringify(mealPlan[0].prices.student));
-        mealPlan = mealPlan.map((meal, index) => ({
-          id: parseInt(index),
-          name: meal.description,
-          price: parseFloat(meal.prices.student).toFixed(2) + " €",
-          desc: meal.additions.join(", ")
-        }))
-        res.json({meals: mealPlan});
-      }
+function getMealPlan() {
+  return new Promise((res,rej) => {
+
+    var Mensa = Parse.Object.extend("Mensa");
+    var query = new Parse.Query(Mensa);
+    query.find().then((canteens) => {
+      canteens.forEach((canteen) => {
+        // console.log(JSON.stringify(canteen));
+        if(canteen.get("name") === "Wilhelmshöher Allee") {
+          var d = new Date();
+          var week = canteen.get("week");
+          var day = d.getDay() - 1;
+          if (day > 4) day = 0;
+          var mealPlan = week[0].days[day].meals;
+          // console.log(JSON.stringify(mealPlan[0].prices.student));
+          mealPlan = mealPlan.map((meal, index) => ({
+            id: parseInt(index),
+            name: meal.description,
+            price: parseFloat(meal.prices.student).toFixed(2) + " €",
+            desc: meal.additions.join(", ")
+          }))
+          res(mealPlan);
+        }
+      });
+    }).catch((error) => {
+      rej(error);
     });
-  }).catch((error) => {
-    console.error(error);
   });
 }
 
-app.get("/", function(req,res) {
+app.get("/", (req,res) => {
   console.log("Hello");
 });
 
@@ -50,12 +52,12 @@ setInterval(() => {
   http.get(URL);
 }, 300000);
 
-async function fetchMealPlan () {
-  // if (query === "") return {};
-  // const apiUrl = 'http://localhost:' + port;
-  const response = await getMealPlan()
-  const { meals } = await response.json()
-  return meals
+function fetchMealPlan () {
+  return new Promise((res,rej) => {
+    const meals = getMealPlan().then((meals) => {
+      res(meals);
+    });
+  });
 }
 
 bot.start(function (ctx) {
@@ -64,34 +66,34 @@ bot.start(function (ctx) {
 });
 
 bot.command('plan', async (ctx) => { 
-  const meals = await fetchMealPlan()
-  var res = "";
+  const meals = fetchMealPlan().then((meals) => {
+    var res = "";
 
-  meals.forEach((meal) => {
-    res += "Essen " + (meal.id + 1) + "\n";
-    res += meal.name + "\n";
-    res += "Preis: " + meal.price + "\n";
-    res += "(" + meal.desc + ")\n\n";
+    meals.forEach((meal) => {
+      res += "Essen " + (meal.id + 1) + "\n";
+      res += meal.name + "\n";
+      res += "Preis: " + meal.price + "\n";
+      res += "(" + meal.desc + ")\n\n";
+    });
+
+    console.log("Processing command request");
+    return ctx.reply(res); 
   });
-  
-  console.log("Processing command request");
-  return ctx.reply(res); 
-
 });
 // bot.command('hunger', function (ctx) { return ctx.reply('Bald wird es hier den Speiseplan geben'); });
 
 bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
-  const offset = parseInt(inlineQuery.offset) || 0
-  const meals = await fetchMealPlan()
-  const results = meals.map((meal) => ({
-    type: 'article',
-    id: meal.id,
-    message_text: meal.name + " für " + meal.price + " (" + meal.desc + ")",
-    title: meal.price,
-    description: meal.name + " (" + meal.desc + ")"
-  }))
-  console.log("Processing inline request");
-  return answerInlineQuery(results, {cache_time: 0})
+  const meals = fetchMealPlan().then((meals) => {
+    const results = meals.map((meal) => ({
+      type: 'article',
+      id: meal.id,
+      message_text: meal.name + " für " + meal.price + " (" + meal.desc + ")",
+      title: meal.price,
+      description: meal.name + " (" + meal.desc + ")"
+    }))
+    console.log("Processing inline request");
+    return answerInlineQuery(results, {cache_time: 0})
+  });
 })
 
 bot.startPolling();
