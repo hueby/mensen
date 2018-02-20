@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const Telegraf = require("telegraf");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const fetch = require('node-fetch')
