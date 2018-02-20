@@ -2,12 +2,13 @@ const Telegraf = require("telegraf");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const fetch = require('node-fetch')
 const express = require('express')
+const http = require('http');
 var Parse = require('parse/node');
 
 Parse.initialize(process.env.PARSE_APP_ID);
 Parse.serverURL = process.env.PARSE_SERVER_URL;
 var app = new express();
-var server = require('http').createServer(app);
+var server = http.createServer(app);
 var port = process.env.PORT || 3000;
 
 function getMealPlan() {
