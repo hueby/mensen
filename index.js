@@ -13,7 +13,10 @@ const URL = process.env.URL || '';
 const BOT_TOKEN = process.env.BOT_TOKEN || ''
 
 const bot = new Telegraf(BOT_TOKEN);
-// bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`)
+setInterval(function() {
+    http.get(URL);
+}, 300000); // every 5 minutes (300000)
+
 
 async function fetchMealPlan () {
   // if (query === "") return {};
@@ -59,9 +62,9 @@ bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
   return answerInlineQuery(results, {cache_time: 0})
 })
 
-bot.startWebhook("/bot" + BOT_TOKEN, null, PORT)
-bot.telegram.setWebhook(URL + "/bot" + BOT_TOKEN)
-// bot.startPolling();
+// bot.startWebhook("/bot" + BOT_TOKEN, null, PORT)
+// bot.telegram.setWebhook(URL + "/bot" + BOT_TOKEN)
+bot.startPolling();
 
 process.on('SIGTERM', function () {
   bot.stop(() => {
