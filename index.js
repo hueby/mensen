@@ -86,7 +86,7 @@ bot.command('plan', async (ctx) => {
     return ctx.reply(res); 
   });
 });
-// bot.command('hunger', function (ctx) { return ctx.reply('Bald wird es hier den Speiseplan geben'); });
+bot.command('about', function (ctx) { return ctx.reply('Mensa Bot Uni Kassel WA71. Github: https://github.com/hueby/mensen'); });
 
 bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
   const meals = fetchMealPlan().then((meals) => {
