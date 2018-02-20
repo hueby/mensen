@@ -8,7 +8,6 @@ Parse.initialize(process.env.PARSE_APP_ID);
 Parse.serverURL = process.env.PARSE_SERVER_URL;
 var server = require('http').createServer(app);
 const PORT = process.env.PORT || 3000;
-const EPORT = parseInt(PORT) + 1
 const URL = process.env.URL || '';
 const BOT_TOKEN = process.env.BOT_TOKEN || ''
 
@@ -17,9 +16,7 @@ setInterval(function() {
     http.get(URL);
 }, 300000); // every 5 minutes (300000)
 
-
 async function fetchMealPlan () {
-  // if (query === "") return {};
   const apiUrl = 'http://localhost:' + port;
   const response = await fetch(apiUrl)
   const { meals } = await response.json()
@@ -46,7 +43,6 @@ bot.command('plan', async (ctx) => {
   return ctx.reply(res); 
 
 });
-// bot.command('hunger', function (ctx) { return ctx.reply('Bald wird es hier den Speiseplan geben'); });
 
 bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
   const offset = parseInt(inlineQuery.offset) || 0
@@ -62,8 +58,6 @@ bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
   return answerInlineQuery(results, {cache_time: 0})
 })
 
-// bot.startWebhook("/bot" + BOT_TOKEN, null, PORT)
-// bot.telegram.setWebhook(URL + "/bot" + BOT_TOKEN)
 bot.startPolling();
 
 process.on('SIGTERM', function () {
@@ -103,7 +97,7 @@ app.get('/', function(req, res) {
   });
 });
 
-server.listen(EPORT, function() {
-  console.log("listening on " + EPORT);
+server.listen(PORT, function() {
+  console.log("listening on " + PORT);
 });
 
