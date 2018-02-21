@@ -32,9 +32,9 @@ function getMealPlan() {
           mealPlan = mealPlan.map((meal, index) => ({
             id: parseInt(index),
             name: meal.description,
-            price: parseFloat(meal.prices.student).toFixed(2) + "/" +
-                   parseFloat(meal.prices.employees).toFixed(2) + "/" +
-                   parseFloat(meal.prices.external).toFixed(2) + " €", 
+            price: parseFloat(meal.prices.student).toFixed(2).replace(".",",") + "/" +
+                   parseFloat(meal.prices.employees).toFixed(2).replace(".",",") + "/" +
+                   parseFloat(meal.prices.external).toFixed(2).replace(".",",") + " €", 
             desc: meal.additions.join(", ")
           }))
           res(mealPlan);
